@@ -1,10 +1,10 @@
 "the trans function by TL
 function! <SID>TransL(word)
-python << EOF
+python3 << EOF
 
 # coding=utf-8
 
-import vim, urllib2, sys
+import vim, urllib.request, sys
 def tras(word):
 
     s = "trans-container"
@@ -14,46 +14,46 @@ def tras(word):
             + word + "&keyfrom=dict.index"
 
     try:
-        url = urllib2.urlopen(request, None, 2)
+        url = urllib.request.urlopen(request, None, 2)
         d = url.read()
-        epos = d.find(err.decode("utf-8").encode("utf-8"))
+        epos = d.find(err.encode("utf-8"))
 
         if epos != -1:
-            print "can't find "
+            print("can't find ")
             return
         else:
-            print word + ":"
+            print(word + ":")
 
-        pos = d.find(s.decode("utf-8").encode("utf-8"))
+        encoded_s = s.encode("utf-8")
+        pos = d.find(encoded_s)
         ret = d[pos : pos + 1000]
 
-        pos = ret.find("<ul>")
-        pos1 = ret.find("</ul>", pos)
+        pos = ret.find("<ul>".encode())
+        pos1 = ret.find("</ul>".encode(), pos)
         if pos1 < pos:
-            print 'not find.'
+            print('not find.')
             return
         ret = ret[pos + 4 : pos1]
-        if "<span" in ret:
+        if "<span".encode() in ret:
             idn = "class=\"pos\">"
-            pos = ret.find(idn)
+            pos = ret.find(idn.encode())
             pos = pos + len(idn)
-            pos1 = ret.find("</span", pos)
-            print "    " + ret[pos : pos1]
+            pos1 = ret.find("</span".encode(), pos)
+            print("    " + ret[pos : pos1])
             idn2 = "class=\"def\">"
-            pos = ret.find(idn2, pos1)
+            pos = ret.find(idn2.encode(), pos1)
             pos = pos + len(idn2)
-            pos1 = ret.find("</span", pos)
-            print "    " + ret[pos : pos1]
+            pos1 = ret.find("</span".encode(), pos)
+            print(("    " + ret[pos : pos1]).decode())
         else:
-            ret = ret.replace('<li>', '')
-            ret = ret.replace('</li>', '')
-            print ret
+            ret = ret.replace('<li>'.encode(), ''.encode())
+            ret = ret.replace('</li>'.encode(), ''.encode())
+            print(ret.decode())
 
     except URLError as e:
-        print e.reason
+        print(e.reason)
 
     return
-
 
 word=vim.eval("a:word")
 tras(word)
